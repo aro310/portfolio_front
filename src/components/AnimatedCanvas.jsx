@@ -23,8 +23,9 @@ export function AnimatedCanvas() {
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseleave", () => { mouse.x = null; mouse.y = null; });
 
-    // Particle config
-    const PARTICLE_COUNT = 80;
+    // Particle config - Optimization: less particles on mobile
+    const isMobile = window.innerWidth < 768;
+    const PARTICLE_COUNT = isMobile ? 30 : 80;
     const MAX_DIST = 130;
     const COLOR = "0, 171, 240";
 
@@ -77,21 +78,23 @@ export function AnimatedCanvas() {
           }
         }
 
-        // Connect particles to each other
-        particles.forEach((p2) => {
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MAX_DIST) {
-            const alpha = (1 - dist / MAX_DIST) * 0.25;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${COLOR}, ${alpha})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        });
+        // Connect particles to each other (Skip on mobile to save battery and reduce heat)
+        if (!isMobile) {
+          particles.forEach((p2) => {
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MAX_DIST) {
+              const alpha = (1 - dist / MAX_DIST) * 0.25;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(${COLOR}, ${alpha})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          });
+        }
       });
 
       animationId = requestAnimationFrame(loop);
