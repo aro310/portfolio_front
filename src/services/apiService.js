@@ -1,5 +1,5 @@
 // src/services/apiService.js
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:5001';
+const API_BASE = (import.meta.env.VITE_API_BASE || 'http://127.0.0.1:5001').replace(/\/$/, '');
 const API_URL_SCRIPT  = `${API_BASE}/api/run-script`;
 const API_URL_CHAT    = `${API_BASE}/api/chat`;
 const API_URL_CONTACT = `${API_BASE}/api/contact`;
