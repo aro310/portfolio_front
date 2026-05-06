@@ -17,11 +17,11 @@ export const generateAudioFromText = async (text) => {
   return response.json();
 };
 
-export const chatWithGemini = async (prompt) => {
+export const chatWithGemini = async (prompt, sessionId) => {
   const response = await fetch(API_URL_CHAT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, session_id: sessionId || '' }),
   });
   if (!response.ok) {
     const err = await response.json();
