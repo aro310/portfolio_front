@@ -500,7 +500,7 @@ function App() {
             <Leva hidden />
             <div className="widget-canvas-container" style={{ height: "220px", position: "relative" }}>
               {canvasReady ? (
-                <Canvas dpr={1} camera={{ position: [0, 0, 8], fov: 42 }} performance={{ min: 0.5 }}>
+                <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 8], fov: 42 }}>
                   <color attach="background" args={["#161618"]} />
                   <Experience audioData={audioData} playAudio={playAudio} setPlayAudio={setPlayAudio} />
                 </Canvas>

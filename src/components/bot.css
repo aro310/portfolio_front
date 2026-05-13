@@ -4,7 +4,7 @@
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
-  height: 100vh; 
+  height: 100%; 
   margin: 0 auto;
   background-color: #161618; /* Dark charcoal */
   border-radius: 20px;
