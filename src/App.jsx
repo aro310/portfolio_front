@@ -500,14 +500,14 @@ function App() {
             <Leva hidden />
             <div className="widget-canvas-container" style={{ height: "220px", position: "relative" }}>
               {canvasReady ? (
-                <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 8], fov: 42 }}>
-                  <color attach="background" args={["#0d1b2a"]} />
+                <Canvas dpr={1} camera={{ position: [0, 0, 8], fov: 42 }} performance={{ min: 0.5 }}>
+                  <color attach="background" args={["#161618"]} />
                   <Experience audioData={audioData} playAudio={playAudio} setPlayAudio={setPlayAudio} />
                 </Canvas>
               ) : (
-                <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#0d1b2a", borderRadius: "8px" }}>
-                  <div style={{ width: "36px", height: "36px", border: "3px solid #1e3a5f", borderTop: "3px solid #00abf0", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                </div>
+                  <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#161618", borderRadius: "8px" }}>
+                    <div style={{ width: "36px", height: "36px", border: "3px solid #2b2d30", borderTop: "3px solid #aba19c", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  </div>
               )}
             </div>
             <div className="widget-ui-container">

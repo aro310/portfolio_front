@@ -214,45 +214,201 @@ section { padding: 7rem 8% 5rem; }
   box-shadow: var(--glow);
 }
 
-/* Profile image */
+/* Profile image futuriste avec orbites courbes animées */
+/* --- VARIABLES LOCALES (Gris Métallique & Bleu-Gris) --- */
 .home-imgHover {
+  --metal-primary: #e2e8f0;   /* Gris clair brillant (Titane) */
+  --metal-secondary: #94a3b8; /* Gris-bleu ardoise */
+  --metal-glow: rgba(226, 232, 240, 0.5); /* Lueur métallique douce */
+  
   position: relative;
-  width: 380px; height: 380px;
+  width: 380px;
+  height: 380px;
   flex-shrink: 0;
-}
-.home-imgHover::before {
-  content:'';
-  position: absolute; inset: -12px;
-  border-radius: 50%;
-  border: 2px solid rgba(171,161,156,0.3);
-  animation: spin 12s linear infinite;
-}
-.home-imgHover::after {
-  content:'';
-  position: absolute; inset: -24px;
-  border-radius: 50%;
-  border: 1px dashed rgba(171,161,156,0.3);
-  animation: spin 20s linear infinite reverse;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.home-imgHover img {
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--color);
-  box-shadow: var(--glow), inset 0 0 40px rgba(0,0,0,0.5);
-  animation: float 5s ease-in-out infinite;
-}
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
-.cloud-cover {
-  position: absolute; bottom: 0; left: 0;
-  width: 100%; height: 40%;
-  background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
-  border-radius: 0 0 50% 50%;
-  pointer-events: none;
-  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate; 
+  cursor: pointer;
 }
 
+/* --- ORBITE 1 : Anneau Titane (Courbe fluide) --- */
+.home-imgHover::before {
+  content: '';
+  position: absolute;
+  inset: -18px;
+
+  border: 2px solid var(--metal-primary);
+  border-radius: 50%;
+
+  /* Lueur métallique et halo bleuté */
+  box-shadow: 
+    inset 0 0 15px var(--metal-glow), 
+    0 0 15px var(--metal-glow);
+  filter: drop-shadow(0 0 8px rgba(148, 163, 184, 0.4));
+
+  animation: orbitMorph1 6s ease-in-out infinite,
+             spin 10s linear infinite;
+             
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- ORBITE 2 : Champ magnétique (Instable & Pointillé) --- */
+.home-imgHover::after {
+  content: '';
+  position: absolute;
+  inset: -35px;
+
+  border: 2px dashed var(--metal-secondary);
+  border-radius: 50%;
+  
+  box-shadow: 0 0 20px rgba(148, 163, 184, 0.2);
+  opacity: 0.8;
+
+  animation: orbitMorph2 8s ease-in-out infinite reverse,
+             spin 15s linear infinite reverse;
+             
+  transition: all 0.5s ease;
+}
+
+/* --- LE COEUR : Image avec effet Chrome/Verre --- */
+.home-imgHover img {
+  position: relative;
+  z-index: 2; 
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+
+  border: 2px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 
+    0 0 25px rgba(226, 232, 240, 0.2),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
+
+  /* Filtre donnant un aspect légèrement "froid" et métallique à l'image */
+  filter: grayscale(30%) sepia(10%) hue-rotate(180deg) contrast(105%);
+  
+  animation: zeroGravity 6s ease-in-out infinite;
+  transition: filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* --- INTERACTION AU SURVOL (Hover) --- */
+/* --- VARIABLES LOCALES (Gris Métallique & Bleu-Gris) --- */
+.home-imgHover {
+  --metal-primary: #e2e8f0;   /* Gris clair brillant (Titane) */
+  --metal-secondary: #94a3b8; /* Gris-bleu ardoise */
+  --metal-glow: rgba(226, 232, 240, 0.5); 
+  
+  position: relative;
+  width: 380px;
+  height: 380px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate; 
+  cursor: pointer;
+}
+
+/* --- ORBITE 1 : Anneau Titane (Courbe fluide) --- */
+.home-imgHover::before {
+  content: '';
+  position: absolute;
+  inset: -18px;
+  border: 2px solid var(--metal-primary);
+  border-radius: 50%;
+  box-shadow: 
+    inset 0 0 15px var(--metal-glow), 
+    0 0 15px var(--metal-glow);
+  filter: drop-shadow(0 0 8px rgba(148, 163, 184, 0.4));
+  animation: orbitMorph1 6s ease-in-out infinite,
+             spin 10s linear infinite;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- ORBITE 2 : Champ magnétique (Instable & Pointillé) --- */
+.home-imgHover::after {
+  content: '';
+  position: absolute;
+  inset: -35px;
+  border: 2px dashed var(--metal-secondary);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(148, 163, 184, 0.2);
+  opacity: 0.8;
+  animation: orbitMorph2 8s ease-in-out infinite reverse,
+             spin 15s linear infinite reverse;
+  transition: all 0.5s ease;
+}
+
+/* --- LE COEUR : Image au rendu Naturel / Réel --- */
+.home-imgHover img {
+  position: relative;
+  z-index: 2; 
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 
+    0 0 25px rgba(226, 232, 240, 0.2),
+    inset 0 0 50px rgba(0, 0, 0, 0.4);
+
+  /* Rendu réel sans filtre de couleur au départ */
+  filter: brightness(1) contrast(1);
+  
+  animation: zeroGravity 6s ease-in-out infinite;
+  transition: filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* --- INTERACTION AU SURVOL (Hover) --- */
+.home-imgHover:hover::before {
+  inset: -25px; 
+  box-shadow: 
+    inset 0 0 25px rgba(255, 255, 255, 0.6), 
+    0 0 35px rgba(226, 232, 240, 0.7);
+  border-color: #ffffff;
+}
+
+.home-imgHover:hover::after {
+  inset: -45px;
+  opacity: 1;
+  border-style: solid; 
+  border-color: var(--metal-primary);
+  box-shadow: 0 0 30px rgba(148, 163, 184, 0.5);
+}
+
+.home-imgHover:hover img {
+  /* Légère accentuation de l'éclat au survol */
+  filter: brightness(1.1) contrast(1.05); 
+  border-color: #ffffff;
+  box-shadow: 
+    0 0 35px rgba(226, 232, 240, 0.4),
+    inset 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes zeroGravity {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-12px) scale(1.02) rotate(2deg); }
+}
+
+@keyframes orbitMorph1 {
+  0%, 100% { border-radius: 50%; }
+  25% { border-radius: 55% 45% 60% 40%; }
+  50% { border-radius: 45% 55% 40% 60%; }
+  75% { border-radius: 60% 40% 55% 45%; }
+}
+
+@keyframes orbitMorph2 {
+  0%, 100% { border-radius: 50%; }
+  20% { border-radius: 60% 40% 55% 45%; }
+  40% { border-radius: 40% 60% 45% 55%; }
+  60% { border-radius: 55% 45% 60% 40%; }
+  80% { border-radius: 45% 55% 50% 50%; }
+}
 /* Scroll hint */
 .scroll-down-hint {
   position: absolute; bottom: 3rem; left: 50%;
@@ -722,8 +878,9 @@ section { padding: 7rem 8% 5rem; }
   height: 56px;
 
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color), var(--color2));
-  color: #aba19c;
+  background: linear-gradient(135deg, #1e1f22, #161618);
+  border: 1px solid rgba(207, 207, 207, 0.4);
+  color: #cfcfcf;
 
   display: flex;
   align-items: center;
@@ -731,22 +888,24 @@ section { padding: 7rem 8% 5rem; }
 
   z-index: 999;
 
-  box-shadow: var(--glow);
+  box-shadow: 0 0 25px rgba(207, 207, 207, 0.25);
 
   cursor: pointer;
 
-  /* Animation rebond basket */
   animation: basketballBounce 1.4s infinite ease-in-out;
 
   transition:
     transform 0.25s ease,
-    box-shadow 0.25s ease;
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 /* Hover plus dynamique */
 .floating-avatar-btn:hover {
   transform: scale(1.18);
-  box-shadow: 0 0 30px rgba(255,255,255,0.35);
+  box-shadow: 0 0 40px rgba(207, 207, 207, 0.45);
+  border-color: #e0e0e0;
+  color: #ffffff;
 }
 
 /* Effet pression au clic */
@@ -756,41 +915,23 @@ section { padding: 7rem 8% 5rem; }
 
 /* Animation style ballon de basket */
 @keyframes basketballBounce {
-  0% {
-    transform: translateY(0) scaleX(1) scaleY(1);
-  }
-
-  10% {
-    transform: translateY(0) scaleX(1.05) scaleY(0.95);
-  }
-
-  30% {
-    transform: translateY(-18px) scaleX(0.96) scaleY(1.04);
-  }
-
-  50% {
-    transform: translateY(0) scaleX(1.08) scaleY(0.92);
-  }
-
-  60% {
-    transform: translateY(-8px) scaleX(0.98) scaleY(1.02);
-  }
-
-  75% {
-    transform: translateY(0) scaleX(1.03) scaleY(0.97);
-  }
-
-  100% {
-    transform: translateY(0) scaleX(1) scaleY(1);
-  }
+  0% { transform: translateY(0) scaleX(1) scaleY(1); }
+  10% { transform: translateY(0) scaleX(1.05) scaleY(0.95); }
+  30% { transform: translateY(-18px) scaleX(0.96) scaleY(1.04); }
+  50% { transform: translateY(0) scaleX(1.08) scaleY(0.92); }
+  60% { transform: translateY(-8px) scaleX(0.98) scaleY(1.02); }
+  75% { transform: translateY(0) scaleX(1.03) scaleY(0.97); }
+  100% { transform: translateY(0) scaleX(1) scaleY(1); }
 }
+
 .floating-avatar-btn::before {
   content: "";
   position: absolute;
   inset: -6px;
   border-radius: 50%;
 
-  background: rgba(255,255,255,0.15);
+  background: rgba(207, 207, 207, 0.2);
+  box-shadow: 0 0 20px rgba(207, 207, 207, 0.1);
 
   animation: pulseRing 1.8s infinite;
 
@@ -798,19 +939,9 @@ section { padding: 7rem 8% 5rem; }
 }
 
 @keyframes pulseRing {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-
-  70% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 0;
-  }
+  0% { transform: scale(0.9); opacity: 0.8; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { opacity: 0; }
 }
 /* ── Avatar Widget ───────────────────────────────────────────────────────── */
 .avatar-widget {
