@@ -231,7 +231,7 @@ function App() {
             <TypingEffect words={["Développeur Full-Stack", " n8n Automation", "Intéret en IA & ML", "Freelance Comeup", "Data Analyste Junior"]} />
           </h2>
           <p className="hero-desc">
-            Étudiant IDEV à l'ESTI · je transforme des idées complexes en solutions logicielles élégantes — du chatbot IA au pipeline d'automatisation n8n.
+            Étudiant IDEV à l'ESTI · je transforme des idées complexes en solutions logicielles | de l'IA au pipeline d'automatisation.
           </p>
           <div className="btn-box">
             <button onClick={() => scrollTo("contact")} className="btn btn-primary">Me Contacter</button>

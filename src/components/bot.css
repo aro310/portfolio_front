@@ -58,7 +58,7 @@ body {
 }
 
 .chat-input:focus {
-  border-color: #f59e0b;
+  border-color: #1a164e;
   box-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
 }
 

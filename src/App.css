@@ -714,18 +714,104 @@ section { padding: 7rem 8% 5rem; }
 
 /* ── Floating Avatar Button ──────────────────────────────────────────────── */
 .floating-avatar-btn {
-  position: fixed; bottom: 2rem; right: 2rem;
-  width: 58px; height: 58px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color), var(--color2));
-  color: white;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 999;
-  box-shadow: var(--glow);
-  transition: var(--transition);
-}
-.floating-avatar-btn:hover { transform: scale(1.1); box-shadow: 0 0 35px rgba(0,171,240,0.6); }
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
 
+  width: 56px;
+  height: 56px;
+
+  border-radius: 50%;
+  background: var(--grad-primary);
+  color: rgb(3, 130, 248);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 999;
+
+  box-shadow: var(--glow);
+
+  cursor: pointer;
+
+  /* Animation rebond basket */
+  animation: basketballBounce 1.4s infinite ease-in-out;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Hover plus dynamique */
+.floating-avatar-btn:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 30px rgba(255,255,255,0.35);
+}
+
+/* Effet pression au clic */
+.floating-avatar-btn:active {
+  transform: scale(0.92);
+}
+
+/* Animation style ballon de basket */
+@keyframes basketballBounce {
+  0% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+  }
+
+  10% {
+    transform: translateY(0) scaleX(1.05) scaleY(0.95);
+  }
+
+  30% {
+    transform: translateY(-18px) scaleX(0.96) scaleY(1.04);
+  }
+
+  50% {
+    transform: translateY(0) scaleX(1.08) scaleY(0.92);
+  }
+
+  60% {
+    transform: translateY(-8px) scaleX(0.98) scaleY(1.02);
+  }
+
+  75% {
+    transform: translateY(0) scaleX(1.03) scaleY(0.97);
+  }
+
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+  }
+}
+.floating-avatar-btn::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.15);
+
+  animation: pulseRing 1.8s infinite;
+
+  z-index: -1;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
 /* ── Avatar Widget ───────────────────────────────────────────────────────── */
 .avatar-widget {
   position: fixed; bottom: 2rem; right: 2rem;
