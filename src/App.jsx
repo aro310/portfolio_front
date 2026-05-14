@@ -595,7 +595,6 @@ function App() {
         <p>{t.footerText}</p>
         <p>
           <a href="https://github.com/aro310" target="_blank" rel="noreferrer">GitHub</a> ·{" "}
-          <a href="https://comeup.com" target="_blank" rel="noreferrer">Comeup</a>
         </p>
       </footer>
 

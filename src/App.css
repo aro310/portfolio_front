@@ -203,15 +203,7 @@ html[data-lang="en"] {
   --glow:      0 0 24px rgba(56, 189, 248, 0.35);
 }
 
-/* ── Canvas mobile fix — stops background jitter on mobile ───────────────── */
-/* The fixed canvas can cause layout repaints when mobile browser chrome
-   appears/disappears. Promoting it to its own compositor layer eliminates this. */
-canvas[style*="position: fixed"],
-canvas[style*="position:fixed"] {
-  will-change: transform;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-}
+
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 .home {
@@ -369,7 +361,7 @@ canvas[style*="position:fixed"] {
   transition: all 0.5s ease;
 }
 
-/* --- LE COEUR : Image avec effet Chrome/Verre --- */
+/* --- LE COEUR : Image au rendu Naturel / Réel --- */
 .home-imgHover img {
   position: relative;
   z-index: 2; 
@@ -377,14 +369,13 @@ canvas[style*="position:fixed"] {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-
   border: 2px solid rgba(226, 232, 240, 0.6);
   box-shadow: 
     0 0 25px rgba(226, 232, 240, 0.2),
-    inset 0 0 50px rgba(0, 0, 0, 0.5);
+    inset 0 0 50px rgba(0, 0, 0, 0.4);
 
-  /* Filtre donnant un aspect légèrement "froid" et métallique à l'image */
-  filter: grayscale(30%) sepia(10%) hue-rotate(180deg) contrast(105%);
+  /* Rendu réel sans filtre de couleur au départ */
+  filter: brightness(1) contrast(1);
   
   animation: zeroGravity 6s ease-in-out infinite;
   transition: filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
@@ -1097,9 +1088,6 @@ canvas[style*="position:fixed"] {
 
   .home { flex-direction: column-reverse; padding: 6rem 4% 4rem; min-height: unset; gap: 3rem; text-align: center; }
   .home-imgHover { width: 220px; height: 220px; margin: 0 auto; }
-  /* Disable heavy orbit animations on mobile for perf */
-  .home-imgHover::before, .home-imgHover::after { animation: spin 15s linear infinite; }
-  .home-imgHover img { animation: none; filter: none; }
   .btn-box { justify-content: center; }
   .home-sci { justify-content: center; }
   .stats-section { gap: 1.5rem; padding: 2rem 4%; }
