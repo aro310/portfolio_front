@@ -6,8 +6,124 @@ import { useScrollReveal } from "./hooks/useScrollReveal";
 import { sendContactForm } from "./services/apiService";
 import { useState, useEffect, useRef } from "react";
 import { Leva } from "leva";
-import { X, MessageCircle, ArrowUp, ExternalLink, Zap, Bot, Globe, ChevronDown, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { X, MessageCircle, ArrowUp, ExternalLink, Zap, Bot, Globe, ChevronDown, Send, CheckCircle, AlertCircle, Menu } from "lucide-react";
 import "./App.css";
+
+// ── Translations ───────────────────────────────────────────────────────────────
+const T = {
+  fr: {
+    greeting: "Bonjour, je suis",
+    name: "Aro Fortunat",
+    roles: ["Développeur Full-Stack", "n8n Automation", "IA & ML", "Freelance Comeup", "Data Analyste Junior"],
+    heroDesc: "Étudiant IDEV à l'ESTI · je transforme des idées complexes en solutions logicielles | de l'IA au pipeline d'automatisation.",
+    contactBtn: "Me Contacter",
+    servicesBtn: "Services Comeup",
+    stats: [["1", "An d'expérience"], ["15+", "Projets"], ["10+", "Technos maîtrisées"]],
+    about: "À", aboutSpan: "Propos",
+    aboutText: "Passionné par l'intersection entre le web et l'intelligence artificielle, je construis des solutions qui ont un vrai impact. Mon parcours à l'ESTI me donne des bases professionnels, mais c'est ma curiosité qui me pousse à explorer.",
+    timeline: [
+      { year: "2024–maintenant", title: "IDEV — ESTI Antananarivo", desc: "Intégration & Développement logiciel. Focus IA, web full-stack." },
+      { year: "2026", title: "Freelance Comeup", desc: "Automatisation n8n, chatbots IA, développement web clients." },
+      { year: "2024", title: "Projets IA", desc: "GED avec OCR+Face-ID, Avatar interactif LLM, Simulateur Trafic 2D." },
+      { year: "2024", title: "Débuts développement", desc: "Python, Django, bases de données, projets académiques." },
+    ],
+    servicesTitle: "Mes", servicesSpan: "Services",
+    servicesSub: "Disponible sur",
+    order: "Commander",
+    skillsTitle: "Mes", skillsSpan: "Compétences",
+    techStack: "Stack technique",
+    skills: [
+      { name: "Python / Flask / Django", pct: 88 },
+      { name: "React.js / JavaScript", pct: 70 },
+      { name: "Machine Learning / IA", pct: 50 },
+      { name: "Automatisation n8n", pct: 80 },
+      { name: "Docker / Git", pct: 65 },
+      { name: "SQL (MySQL / PostgreSQL)", pct: 80 },
+    ],
+    portfolioTitle: "Projets &", portfolioSpan: "Réalisations",
+    projectDescGed: "Plateforme universitaire avec OCR, Face-Id, chatbot vocal et recherche intelligente sur documents.",
+    projectDescLocar: "Application de gestion de location de véhicules : réservation, facturation, suivi contrats.",
+    projectDescAvatar: "Avatar 3D animé connecté à un LLM + Google Calendar + Gmail via MCP et n8n.",
+    contactTitle: "", contactSpan: "Contact",
+    contactSub: "Une idée ? Un projet ? Discutons-en.",
+    workTogether: "Travaillons ensemble",
+    available: "Je suis disponible pour une alternance ou stage, des projets freelance. Réponds généralement sous 24h.",
+    formName: "Nom", formNamePh: "Ton nom",
+    formEmail: "Email", formEmailPh: "ton@email.com",
+    formMsg: "Message", formMsgPh: "Décris ton projet...",
+    formSend: "Envoyer le message",
+    formSending: "Envoi...",
+    formSuccess: "Message envoyé ! Je te réponds sous 24h.",
+    formError: "Une erreur est survenue.",
+    footerText: "© 2026 Aro Fortunat · Développé avec React & Flask",
+    assistantTitle: "Lancer l'Assistant IA",
+    navLinks: [
+      { id: "home", label: "Accueil" },
+      { id: "about", label: "À Propos" },
+      { id: "services", label: "Services" },
+      { id: "skills", label: "Compétences" },
+      { id: "portfolio", label: "Projets" },
+      { id: "contact", label: "Contact" },
+    ],
+    cv: "Mon CV",
+  },
+  en: {
+    greeting: "Hello, I'm",
+    name: "Aro Fortunat",
+    roles: ["Full-Stack Developer", "n8n Automation", "AI & ML", "Freelance Comeup", "Junior Data Analyst"],
+    heroDesc: "IDEV student at ESTI · I turn complex ideas into software solutions | from AI to automation pipelines.",
+    contactBtn: "Contact Me",
+    servicesBtn: "Comeup Services",
+    stats: [["1", "Year of experience"], ["15+", "Projects"], ["10+", "Technologies"]],
+    about: "About", aboutSpan: "Me",
+    aboutText: "Passionate about the intersection of web and artificial intelligence, I build solutions that make a real impact. My studies at ESTI give me a professional foundation, but it's my curiosity that drives me to explore new territories.",
+    timeline: [
+      { year: "2024–present", title: "IDEV — ESTI Antananarivo", desc: "Software Integration & Development. Focus on AI, full-stack web." },
+      { year: "2026", title: "Freelance Comeup", desc: "n8n automation, AI chatbots, web development for clients." },
+      { year: "2024", title: "AI Projects", desc: "GED with OCR+Face-ID, Interactive LLM Avatar, 2D Traffic Simulator." },
+      { year: "2024", title: "Development beginnings", desc: "Python, Django, databases, academic projects." },
+    ],
+    servicesTitle: "My", servicesSpan: "Services",
+    servicesSub: "Available on",
+    order: "Order",
+    skillsTitle: "My", skillsSpan: "Skills",
+    techStack: "Tech Stack",
+    skills: [
+      { name: "Python / Flask / Django", pct: 88 },
+      { name: "React.js / JavaScript", pct: 70 },
+      { name: "Machine Learning / AI", pct: 50 },
+      { name: "n8n Automation", pct: 80 },
+      { name: "Docker / Git", pct: 65 },
+      { name: "SQL (MySQL / PostgreSQL)", pct: 80 },
+    ],
+    portfolioTitle: "Projects &", portfolioSpan: "Work",
+    projectDescGed: "University platform with OCR, Face-Id, voice chatbot and intelligent document search.",
+    projectDescLocar: "Vehicle rental management app: reservations, billing, contract tracking.",
+    projectDescAvatar: "Animated 3D avatar connected to an LLM + Google Calendar + Gmail via MCP and n8n.",
+    contactTitle: "", contactSpan: "Contact",
+    contactSub: "Have an idea? A project? Let's talk.",
+    workTogether: "Let's work together",
+    available: "I'm available for internships, apprenticeships and freelance projects. Usually reply within 24h.",
+    formName: "Name", formNamePh: "Your name",
+    formEmail: "Email", formEmailPh: "your@email.com",
+    formMsg: "Message", formMsgPh: "Describe your project...",
+    formSend: "Send message",
+    formSending: "Sending...",
+    formSuccess: "Message sent! I'll reply within 24h.",
+    formError: "An error occurred.",
+    footerText: "© 2026 Aro Fortunat · Built with React & Flask",
+    assistantTitle: "Launch AI Assistant",
+    navLinks: [
+      { id: "home", label: "Home" },
+      { id: "about", label: "About" },
+      { id: "services", label: "Services" },
+      { id: "skills", label: "Skills" },
+      { id: "portfolio", label: "Projects" },
+      { id: "contact", label: "Contact" },
+    ],
+    cv: "My CV",
+  },
+};
 
 // ── Typing Effect ─────────────────────────────────────────────────────────────
 function TypingEffect({ words }) {
@@ -16,7 +132,7 @@ function TypingEffect({ words }) {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const word = words[current];
+    const word = words[current % words.length];
     let timeout;
     if (!deleting && displayed.length < word.length) {
       timeout = setTimeout(() => setDisplayed(word.slice(0, displayed.length + 1)), 80);
@@ -53,7 +169,7 @@ function ScrollProgress() {
   return <div className="scroll-progress" style={{ width: `${progress}%` }} />;
 }
 
-// ── Section Wrapper (scroll reveal) ───────────────────────────────────────────
+// ── Section Wrapper ────────────────────────────────────────────────────────────
 function Section({ id, className, children }) {
   const ref = useScrollReveal();
   return (
@@ -64,9 +180,9 @@ function Section({ id, className, children }) {
 }
 
 // ── Contact Form ───────────────────────────────────────────────────────────────
-function ContactForm() {
+function ContactForm({ t }) {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState(null); // null | "sending" | "success" | "error"
+  const [status, setStatus] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -88,32 +204,32 @@ function ContactForm() {
     <form className="contact-form" onSubmit={handleSubmit}>
       <div className="form-row">
         <div className="form-group">
-          <label>Nom</label>
-          <input name="name" type="text" placeholder="Ton nom" value={form.name} onChange={handleChange} required />
+          <label>{t.formName}</label>
+          <input name="name" type="text" placeholder={t.formNamePh} value={form.name} onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label>Email</label>
-          <input name="email" type="email" placeholder="ton@email.com" value={form.email} onChange={handleChange} required />
+          <label>{t.formEmail}</label>
+          <input name="email" type="email" placeholder={t.formEmailPh} value={form.email} onChange={handleChange} required />
         </div>
       </div>
       <div className="form-group">
-        <label>Message</label>
-        <textarea name="message" rows={5} placeholder="Décris ton projet..." value={form.message} onChange={handleChange} required />
+        <label>{t.formMsg}</label>
+        <textarea name="message" rows={5} placeholder={t.formMsgPh} value={form.message} onChange={handleChange} required />
       </div>
 
       {status === "success" && (
         <div className="form-feedback success">
-          <CheckCircle size={18} /> Message envoyé ! Je te réponds sous 24h.
+          <CheckCircle size={18} /> {t.formSuccess}
         </div>
       )}
       {status === "error" && (
         <div className="form-feedback error">
-          <AlertCircle size={18} /> {errMsg || "Une erreur est survenue."}
+          <AlertCircle size={18} /> {errMsg || t.formError}
         </div>
       )}
 
       <button type="submit" className="btn-submit" disabled={status === "sending"}>
-        {status === "sending" ? "Envoi..." : <><Send size={16} /> Envoyer le message</>}
+        {status === "sending" ? t.formSending : <><Send size={16} /> {t.formSend}</>}
       </button>
     </form>
   );
@@ -128,6 +244,16 @@ function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [isSticky, setIsSticky] = useState(false);
   const [showBackTop, setShowBackTop] = useState(false);
+  const [lang, setLang] = useState("fr");       // "fr" | "en"
+  const [menuOpen, setMenuOpen] = useState(false); // mobile hamburger
+
+  const t = T[lang];
+
+  // Apply theme class and lang on <html>
+  useEffect(() => {
+    document.documentElement.setAttribute("data-lang", lang);
+    document.documentElement.setAttribute("lang", lang);
+  }, [lang]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -148,56 +274,45 @@ function App() {
   const scrollTo = (id, e) => {
     e?.preventDefault();
     setActiveSection(id);
+    setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleAudioGenerated = (data) => { setAudioData(data); setPlayAudio(true); };
 
-  const navLinks = [
-    { id: "home",      label: "Accueil" },
-    { id: "about",     label: "À Propos" },
-    { id: "services",  label: "Services" },
-    { id: "skills",    label: "Compétences" },
-    { id: "portfolio", label: "Projets" },
-    { id: "contact",   label: "Contact" },
-  ];
-
-  const skills = [
-    { name: "Python / Flask / Django", pct: 88 },
-    { name: "React.js / JavaScript", pct: 70 },
-    { name: "Machine Learning / IA", pct: 50 },
-    { name: "Automatisation n8n", pct: 80 },
-    { name: "Docker / Git ", pct: 65 },
-    { name: "SQL (MySQL / PostgreSQL)", pct: 80 },
-  ];
-
-  const techBadges = [
-    "Python","React","Flask","Django","n8n","Docker","TensorFlow",
-    "FastAPI","OpenCV","NumPy","Git","PostgreSQL","SQLite","PHP","C",
-  ];
-
   const services = [
     {
       icon: <Zap size={36} />,
-      title: "Automatisation n8n",
-      desc: "Automatisation de tes processus métiers avec n8n : synchronisation de données, emails automatiques, intégration API, notifications. Gain de temps garanti.",
+      title: lang === "fr" ? "Automatisation n8n" : "n8n Automation",
+      desc: lang === "fr"
+        ? "Automatisation de tes processus métiers avec n8n : synchronisation de données, emails automatiques, intégration API, notifications. Gain de temps garanti."
+        : "Automate your business processes with n8n: data sync, automated emails, API integrations, notifications. Guaranteed time savings.",
       tags: ["n8n","Webhooks","API REST","Google Workspace"],
       comeup: true,
     },
     {
       icon: <Bot size={36} />,
-      title: "Chatbot IA Personnalisé",
-      desc: "Création d'agents conversationnels intelligents intégrables dans ton site. Connexion à Google Calendar, Gmail, et APIs tierces via MCP.",
+      title: lang === "fr" ? "Chatbot IA Personnalisé" : "Custom AI Chatbot",
+      desc: lang === "fr"
+        ? "Création d'agents conversationnels intelligents intégrables dans ton site. Connexion à Google Calendar, Gmail, et APIs tierces via MCP."
+        : "Build intelligent conversational agents for your site. Connects to Google Calendar, Gmail, and third-party APIs via MCP.",
       tags: ["LLM","MCP","Flask","React"],
       comeup: true,
     },
     {
       icon: <Globe size={36} />,
-      title: "Application Web Full-Stack junior",
-      desc: "Développement de sites et apps web modernes avec React et Flask/Django. Interface responsive, base de données, déploiement inclus.",
+      title: lang === "fr" ? "Application Web Full-Stack junior" : "Junior Full-Stack Web App",
+      desc: lang === "fr"
+        ? "Développement de sites et apps web modernes avec React et Flask/Django. Interface responsive, base de données, déploiement inclus."
+        : "Modern web sites and apps with React and Flask/Django. Responsive UI, database, deployment included.",
       tags: ["React","Django","Flask","PostgreSQL"],
       comeup: false,
     },
+  ];
+
+  const techBadges = [
+    "Python","React","Flask","Django","n8n","Docker","TensorFlow",
+    "FastAPI","OpenCV","NumPy","Git","PostgreSQL","SQLite","PHP","C",
   ];
 
   return (
@@ -210,37 +325,65 @@ function App() {
         <a href="#home" onClick={(e) => scrollTo("home", e)} className="logo">
           Aro<span>.</span>
         </a>
+
+        {/* Desktop nav */}
         <nav className="navbar">
-          {navLinks.map((l) => (
+          {t.navLinks.map((l) => (
             <button key={l.id} onClick={() => scrollTo(l.id)} className={activeSection === l.id ? "active" : ""}>
               {l.label}
             </button>
           ))}
         </nav>
-        <a href="/pdf/Aroniaina_IDEV.pdf" target="_blank" rel="noreferrer" className="btn-cv">
-          Mon CV
-        </a>
+
+        <div className="header-actions">
+          {/* Language toggle */}
+          <button
+            className="lang-btn"
+            onClick={() => setLang(lang === "fr" ? "en" : "fr")}
+            title={lang === "fr" ? "Switch to English" : "Passer en Français"}
+          >
+            {lang === "fr" ? "🇬🇧 EN" : "🇫🇷 FR"}
+          </button>
+
+          <a href="/pdf/Aroniaina_IDEV.pdf" target="_blank" rel="noreferrer" className="btn-cv">
+            {t.cv}
+          </a>
+
+          {/* Hamburger — mobile only */}
+          <button className="hamburger-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </header>
+
+      {/* Mobile Nav Drawer */}
+      {menuOpen && (
+        <div className="mobile-nav-drawer">
+          {t.navLinks.map((l) => (
+            <button key={l.id} onClick={() => scrollTo(l.id)} className={activeSection === l.id ? "active" : ""}>
+              {l.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ── Hero ── */}
       <section className="home reveal visible" id="home">
         <div className="home-content">
-          <p className="hero-greeting"> Bonjour, je suis</p>
-          <h1>Aro Fortunat</h1>
+          <p className="hero-greeting"> {t.greeting}</p>
+          <h1>{t.name}</h1>
           <h2 className="hero-role">
-            <TypingEffect words={["Développeur Full-Stack", " n8n Automation", "Intéret en IA & ML", "Freelance Comeup", "Data Analyste Junior"]} />
+            <TypingEffect key={lang} words={t.roles} />
           </h2>
-          <p className="hero-desc">
-            Étudiant IDEV à l'ESTI · je transforme des idées complexes en solutions logicielles | de l'IA au pipeline d'automatisation.
-          </p>
+          <p className="hero-desc">{t.heroDesc}</p>
           <div className="btn-box">
-            <button onClick={() => scrollTo("contact")} className="btn btn-primary">Me Contacter</button>
+            <button onClick={() => scrollTo("contact")} className="btn btn-primary">{t.contactBtn}</button>
             <a href="https://comeup.com/fr/@aroratovoharison" target="_blank" rel="noreferrer" className="btn btn-outline">
-              Services Comeup 
+              {t.servicesBtn}
             </a>
             <a href="https://github.com/aro310" target="_blank" rel="noreferrer" className="btn btn-ghost">
-            <i className="bx bxl-github" /> GitHub
-          </a>
+              <i className="bx bxl-github" /> GitHub
+            </a>
           </div>
           <div className="home-sci">
             <a href="https://github.com/aro310" target="_blank" rel="noreferrer" title="GitHub"><i className="bx bxl-github"></i></a>
@@ -260,7 +403,7 @@ function App() {
 
       {/* ── Stats ── */}
       <div className="stats-section">
-        {[["1", "An d'expérience"], ["15+", "Projets"], ["10+", "Technos maîtrisées"]].map(([val, lbl]) => (
+        {t.stats.map(([val, lbl]) => (
           <div className="stat-item" key={lbl}>
             <h2>{val}</h2>
             <p>{lbl}</p>
@@ -270,7 +413,7 @@ function App() {
 
       {/* ── About ── */}
       <Section id="about" className="about">
-        <h2 className="heading">À <span>Propos</span></h2>
+        <h2 className="heading">{t.about} <span>{t.aboutSpan}</span></h2>
         <div className="about-grid">
           <div className="about-photo-col">
             <div className="about-photo-ring">
@@ -283,22 +426,15 @@ function App() {
             </div>
           </div>
           <div className="about-text-col">
-            <p className="about-intro">
-              Passionné par l'intersection entre le <strong>web</strong> et l'<strong>intelligence artificielle</strong>, je construis des solutions qui ont un vrai impact. Mon parcours à l'ESTI me donne des bases professionnels, mais c'est ma curiosité qui me pousse à explorer de nouveaux territoires.
-            </p>
+            <p className="about-intro">{t.aboutText}</p>
             <div className="timeline">
-              {[
-                { year: "2024–maintenant", title: "IDEV — ESTI Antananarivo", desc: "Intégration & Développement logiciel. Focus IA, web full-stack." },
-                { year: "2026", title: "Freelance Comeup", desc: "Automatisation n8n, chatbots IA, développement web clients." },
-                { year: "2024", title: "Projets IA", desc: "GED avec OCR+Face-ID, Avatar interactif LLM, Simulateur Trafic 2D." },
-                { year: "2024", title: "Débuts développement", desc: "Python, Django, bases de données, projets académiques." },
-              ].map((t) => (
-                <div className="timeline-item" key={t.year}>
+              {t.timeline.map((tl, index) => (
+                <div className="timeline-item" key={index}>
                   <div className="tl-dot" />
                   <div className="tl-content">
-                    <span className="tl-year">{t.year}</span>
-                    <strong>{t.title}</strong>
-                    <p>{t.desc}</p>
+                    <span className="tl-year">{tl.year}</span>
+                    <strong>{tl.title}</strong>
+                    <p>{tl.desc}</p>
                   </div>
                 </div>
               ))}
@@ -309,8 +445,8 @@ function App() {
 
       {/* ── Services ── */}
       <Section id="services" className="services-section">
-        <h2 className="heading">Mes <span>Services</span></h2>
-        <p className="section-sub">Disponible sur <a href="https://comeup.com/fr/@aroratovoharison" target="_blank" rel="noreferrer" className="link-comeup">Comeup ↗</a></p>
+        <h2 className="heading">{t.servicesTitle} <span>{t.servicesSpan}</span></h2>
+        <p className="section-sub">{t.servicesSub} <a href="https://comeup.com/fr/@aroratovoharison" target="_blank" rel="noreferrer" className="link-comeup">Comeup ↗</a></p>
         <div className="services-grid">
           {services.map((s) => (
             <div className="service-card" key={s.title}>
@@ -318,11 +454,11 @@ function App() {
               <h3>{s.title}</h3>
               <p>{s.desc}</p>
               <div className="service-tags">
-                {s.tags.map((t) => <span className="svc-tag" key={t}>{t}</span>)}
+                {s.tags.map((tag) => <span className="svc-tag" key={tag}>{tag}</span>)}
               </div>
               {s.comeup && (
                 <a href="https://comeup.com/fr/@aroratovoharison" target="_blank" rel="noreferrer" className="btn-service">
-                  Commander <ExternalLink size={14} />
+                  {t.order} <ExternalLink size={14} />
                 </a>
               )}
             </div>
@@ -332,10 +468,10 @@ function App() {
 
       {/* ── Skills ── */}
       <Section id="skills" className="skills">
-        <h2 className="heading">Mes <span>Compétences</span></h2>
+        <h2 className="heading">{t.skillsTitle} <span>{t.skillsSpan}</span></h2>
         <div className="skills-layout">
           <div className="skill-bars">
-            {skills.map((s) => (
+            {t.skills.map((s) => (
               <div className="skill-bar-item" key={s.name}>
                 <div className="skill-bar-header">
                   <span>{s.name}</span>
@@ -348,7 +484,7 @@ function App() {
             ))}
           </div>
           <div className="tech-badges">
-            <h3>Stack technique</h3>
+            <h3>{t.techStack}</h3>
             <div className="badge-grid">
               {techBadges.map((b) => <span className="tech-badge" key={b}>{b}</span>)}
             </div>
@@ -358,7 +494,7 @@ function App() {
 
       {/* ── Projects ── */}
       <Section id="portfolio" className="portfolio">
-        <h2 className="heading">Projets & <span>Réalisations</span></h2>
+        <h2 className="heading">{t.portfolioTitle} <span>{t.portfolioSpan}</span></h2>
         <div className="project-grid">
           {/* GED */}
           <div className="project-card">
@@ -373,10 +509,8 @@ function App() {
               <div className="project-tags-row">
                 <span className="proj-tag">Django</span><span className="proj-tag">OCR</span><span className="proj-tag">Face-ID</span>
               </div>
-              <h3>GED – Gestion Électronique de Documents</h3>
-              <p className="project-desc">
-                Plateforme universitaire avec <span className="highlight">OCR, Face-Id, chatbot vocal</span> et recherche intelligente sur documents.
-              </p>
+              <h3>GED – {lang === "fr" ? "Gestion Électronique de Documents" : "Electronic Document Management"}</h3>
+              <p className="project-desc">{t.projectDescGed}</p>
               <div className="project-btns">
                 <a href="https://github.com/aro310/GED" target="_blank" rel="noreferrer" className="btn-proj">
                   <i className="bx bxl-github" style={{fontSize:'15px'}} /> GitHub
@@ -384,7 +518,6 @@ function App() {
               </div>
             </div>
           </div>
-
           {/* LOCAR */}
           <div className="project-card">
             <div className="card-image-slider">
@@ -398,10 +531,8 @@ function App() {
               <div className="project-tags-row">
                 <span className="proj-tag">Flask</span><span className="proj-tag">Python</span><span className="proj-tag">MySQL</span>
               </div>
-              <h3>LOCAR – Location de Véhicules</h3>
-              <p className="project-desc">
-                Application de gestion de <span className="highlight">location de véhicules</span> : réservation, facturation, suivi contrats.
-              </p>
+              <h3>LOCAR – {lang === "fr" ? "Location de Véhicules" : "Vehicle Rental"}</h3>
+              <p className="project-desc">{t.projectDescLocar}</p>
               <div className="project-btns">
                 <a href="https://github.com/aro310/locar" target="_blank" rel="noreferrer" className="btn-proj">
                   <i className="bx bxl-github" style={{fontSize:'15px'}} /> GitHub
@@ -409,7 +540,6 @@ function App() {
               </div>
             </div>
           </div>
-
           {/* AVATAR */}
           <div className="project-card">
             <div className="card-image-slider">
@@ -423,10 +553,8 @@ function App() {
               <div className="project-tags-row">
                 <span className="proj-tag">React</span><span className="proj-tag">Three.js</span><span className="proj-tag">n8n</span><span className="proj-tag">LLM</span>
               </div>
-              <h3>AVATARO – Assistant IA Interactif</h3>
-              <p className="project-desc">
-                Avatar 3D animé connecté à un <span className="highlight">LLM + Google Calendar + Gmail</span> via MCP et n8n.
-              </p>
+              <h3>AVATARO – {lang === "fr" ? "Assistant IA Interactif" : "Interactive AI Assistant"}</h3>
+              <p className="project-desc">{t.projectDescAvatar}</p>
               <div className="project-btns">
                 <a href="https://github.com/aro310/avatar" target="_blank" rel="noreferrer" className="btn-proj">
                   <i className="bx bxl-github" style={{fontSize:'15px'}} /> GitHub
@@ -439,12 +567,12 @@ function App() {
 
       {/* ── Contact ── */}
       <Section id="contact" className="contact">
-        <h2 className="heading"><span>Contact</span></h2>
-        <p className="section-sub">Une idée ? Un projet ? Discutons-en.</p>
+        <h2 className="heading"><span>{t.contactSpan}</span></h2>
+        <p className="section-sub">{t.contactSub}</p>
         <div className="contact-layout">
           <div className="contact-info-col">
-            <h3>Travaillons ensemble</h3>
-            <p>Je suis disponible pour une alternance ou stage, des projets freelance. Réponds généralement sous 24h.</p>
+            <h3>{t.workTogether}</h3>
+            <p>{t.available}</p>
             <ul className="contact-details">
               <li><i className="bx bx-envelope" /> <a href="mailto:aroratovoharison@gmail.com">aroratovoharison@gmail.com</a></li>
               <li><i className="bx bx-phone" /> +261 34 54 125 84</li>
@@ -457,39 +585,36 @@ function App() {
             </div>
           </div>
           <div className="contact-form-col">
-            <ContactForm />
+            <ContactForm t={t} />
           </div>
         </div>
       </Section>
 
       {/* ── Footer ── */}
       <footer className="footer">
-        <p>© 2026 <strong>Aro Fortunat</strong> · Développé avec React & Flask</p>
+        <p>{t.footerText}</p>
         <p>
           <a href="https://github.com/aro310" target="_blank" rel="noreferrer">GitHub</a> ·{" "}
           <a href="https://comeup.com" target="_blank" rel="noreferrer">Comeup</a>
         </p>
       </footer>
 
-      {/* ── Back to Top ── */}
       {showBackTop && (
         <button className="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
           <ArrowUp size={20} />
         </button>
       )}
 
-      {/* ── Floating Avatar Button ── */}
       {!showAvatar && (
         <button
           className="floating-avatar-btn"
           onClick={() => { setShowAvatar(true); setCanvasReady(false); setTimeout(() => setCanvasReady(true), 120); }}
-          title="Lancer l'Assistant IA"
+          title={t.assistantTitle}
         >
           <MessageCircle size={28} />
         </button>
       )}
 
-      {/* ── Avatar Widget ── */}
       {showAvatar && (
         <div className="avatar-widget">
           <div className="avatar-header">
@@ -505,9 +630,9 @@ function App() {
                   <Experience audioData={audioData} playAudio={playAudio} setPlayAudio={setPlayAudio} />
                 </Canvas>
               ) : (
-                  <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#161618", borderRadius: "8px" }}>
-                    <div style={{ width: "36px", height: "36px", border: "3px solid #2b2d30", borderTop: "3px solid #aba19c", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                  </div>
+                <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#161618", borderRadius: "8px" }}>
+                  <div style={{ width: "36px", height: "36px", border: "3px solid #2b2d30", borderTop: "3px solid #aba19c", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                </div>
               )}
             </div>
             <div className="widget-ui-container">

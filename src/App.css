@@ -104,6 +104,14 @@ section { padding: 7rem 8% 5rem; }
   background: var(--color);
   border-radius: 2px;
 }
+/* ── Header actions group ────────────────────────────────────────────────── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
 .btn-cv {
   padding: 0.5rem 1.2rem;
   background: var(--color);
@@ -115,6 +123,95 @@ section { padding: 7rem 8% 5rem; }
   white-space: nowrap;
 }
 .btn-cv:hover { box-shadow: var(--glow); transform: translateY(-1px); }
+
+/* ── Language toggle button ──────────────────────────────────────────────── */
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  white-space: nowrap;
+  transition: var(--transition);
+}
+.lang-btn:hover {
+  color: var(--color);
+  border-color: var(--color);
+  background: rgba(255,255,255,0.07);
+}
+
+/* ── Hamburger (mobile only) ─────────────────────────────────────────────── */
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ── Mobile Nav Drawer ───────────────────────────────────────────────────── */
+.mobile-nav-drawer {
+  display: none;
+  position: fixed;
+  top: 64px; left: 0; right: 0;
+  background: rgba(22, 22, 24, 0.97);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  flex-direction: column;
+  gap: 0;
+  padding: 0.5rem 0 1rem;
+  z-index: 998;
+  animation: slideDown 0.25s ease;
+}
+@keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+.mobile-nav-drawer button {
+  width: 100%;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: left;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.mobile-nav-drawer button:hover,
+.mobile-nav-drawer button.active {
+  color: var(--color);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── English (Blue) Theme — Applied via html[data-lang="en"] ─────────────── */
+html[data-lang="en"] {
+  --bg:        #0a0e1a;
+  --bg2:       #0d1520;
+  --card-bg:   rgba(15, 25, 50, 0.8);
+  --color:     #38bdf8;   /* Electric Sky Blue */
+  --color2:    #818cf8;   /* Indigo accent */
+  --text:      #f0f8ff;
+  --text-muted:#7c9ab8;
+  --border:    rgba(56, 189, 248, 0.15);
+  --glow:      0 0 24px rgba(56, 189, 248, 0.35);
+}
+
+/* ── Canvas mobile fix — stops background jitter on mobile ───────────────── */
+/* The fixed canvas can cause layout repaints when mobile browser chrome
+   appears/disappears. Promoting it to its own compositor layer eliminates this. */
+canvas[style*="position: fixed"],
+canvas[style*="position:fixed"] {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 .home {
@@ -608,7 +705,7 @@ section { padding: 7rem 8% 5rem; }
 
 /* Animated progress bars */
 .skill-bars { display: flex; flex-direction: column; gap: 1.6rem; }
-.skill-bar-item { }
+.skill-bar-item { display: flex; flex-direction: column; }
 .skill-bar-header {
   display: flex; justify-content: space-between;
   font-size: 0.9rem; font-weight: 600;
@@ -986,10 +1083,23 @@ section { padding: 7rem 8% 5rem; }
 }
 
 @media (max-width: 768px) {
-  .header { flex-wrap: wrap; padding: 1rem 4%; }
-  .navbar { display: none; } /* replaced with hamburger on real apps */
+  .header { flex-wrap: nowrap; padding: 0.9rem 4%; gap: 0.5rem; }
+  /* Hide desktop navbar — replaced by the hamburger drawer */
+  .navbar { display: none; }
+  /* Show hamburger button */
+  .hamburger-btn { display: flex; }
+  /* Show mobile drawer when active */
+  .mobile-nav-drawer { display: flex; }
+  /* Compact header-actions on mobile */
+  .header-actions { margin-left: auto; gap: 0.4rem; }
+  .lang-btn { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
+  .btn-cv { display: none; } /* hidden on mobile to save space */
+
   .home { flex-direction: column-reverse; padding: 6rem 4% 4rem; min-height: unset; gap: 3rem; text-align: center; }
   .home-imgHover { width: 220px; height: 220px; margin: 0 auto; }
+  /* Disable heavy orbit animations on mobile for perf */
+  .home-imgHover::before, .home-imgHover::after { animation: spin 15s linear infinite; }
+  .home-imgHover img { animation: none; filter: none; }
   .btn-box { justify-content: center; }
   .home-sci { justify-content: center; }
   .stats-section { gap: 1.5rem; padding: 2rem 4%; }
