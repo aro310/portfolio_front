@@ -8,31 +8,20 @@ import "./bot.css";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-// ── Prompt suggestion chips shown at the start ─────────────────────────────
-const SUGGESTIONS = [
-  { emoji: "📅", label: "Je veux programmer un meeting" },
-  { emoji: "📧", label: "Je veux contacter Aro" },
-  { emoji: "💼", label: "Parle-moi de tes services" },
-  { emoji: "🛠️", label: "Tu peux automatiser quoi avec n8n ?" },
-];
-
-// ── Session ID persisté dans localStorage ──────────────────────────────────
-function getOrCreateSessionId() {
-  let id = localStorage.getItem("aro_session_id");
-  if (!id) {
-    id = "sess_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-    localStorage.setItem("aro_session_id", id);
-  }
-  return id;
+// ── Ephemeral session ID — fresh on every widget open ──────────────────────
+// (NOT persisted in localStorage — closing/reopening the widget resets history)
+function newSessionId() {
+  return "sess_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
 export const TextToAudioGenerator = ({ onAudioGenerated }) => {
-  const sessionId = useRef(getOrCreateSessionId());
+  const sessionId = useRef(newSessionId()); // new session each time widget mounts
   const [inputPrompt, setInputPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const chatRef = useRef(null);
+  const isFirstMessage = useRef(true); // track if this is the first exchange
 
   const toggleListening = () => {
     if (!recognition) {
@@ -68,47 +57,27 @@ export const TextToAudioGenerator = ({ onAudioGenerated }) => {
     store.set({ isGenerating: true });
 
     try {
-      // 1. Appel chat (historique géré par Supabase côté backend via session_id)
+      // 1. Chat — always runs, must succeed
       const chatData = await chatWithGemini(userMessage, sessionId.current);
-      const fullResponse = chatData.response;
+      const fullResponse = chatData.response || "";
       const action = chatData.action;
 
-      // 2. Gestion popup calendar / email
-      let popupWindow = null;
-      let popupType = "";
+      // 2. Action popups (calendar / email)
       let popupUrl = "";
       if (action === "open_calendar") {
-        popupType = "Google Calendar";
         popupUrl = "https://calendar.google.com/calendar/u/0/r/day";
-        popupWindow = window.open(popupUrl, "CalendarPopup", "width=1000,height=800");
+        const w = window.open(popupUrl, "CalendarPopup", "width=1000,height=800");
+        if (!w) setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ Pop-up bloquée. Ouvre manuellement : ${popupUrl}` }]);
       } else if (action === "open_email") {
-        popupType = "Gmail";
         popupUrl = "https://mail.google.com/mail/u/0/#inbox";
-        popupWindow = window.open(popupUrl, "EmailPopup", "width=1000,height=800");
-      }
-      if (action && (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined')) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: `⚠️ Pop-up bloquée. Ouvre manuellement : ${popupUrl}` },
-        ]);
+        const w = window.open(popupUrl, "EmailPopup", "width=1000,height=800");
+        if (!w) setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ Pop-up bloquée. Ouvre manuellement : ${popupUrl}` }]);
       }
 
-      // 3. Génération audio
-      const result = await generateAudioFromText(fullResponse);
-      if (!result?.audio_base64) throw new Error("Audio non généré");
-
-      // 4. Placeholder message pour la réponse (sera rempli par l'effet machine à écrire)
+      // 3. Always show text response (typewriter effect)
       setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
-
-      // 5. Démarrage audio
-      if (onAudioGenerated) onAudioGenerated({ audioBase64: result.audio_base64 });
-      window.dispatchEvent(new CustomEvent("audioGenerated", {
-        detail: { audioBase64: result.audio_base64 },
-      }));
-
       store.set({ isGenerating: false });
 
-      // 6. Effet machine à écrire
       let assistantText = "";
       fullResponse.split("").forEach((char, index) => {
         setTimeout(() => {
@@ -121,12 +90,28 @@ export const TextToAudioGenerator = ({ onAudioGenerated }) => {
         }, index * 15);
       });
 
+      // 4. Audio — optional, silent fallback if it fails
+      try {
+        const result = await generateAudioFromText(fullResponse);
+        if (result?.audio_base64) {
+          if (onAudioGenerated) onAudioGenerated({ audioBase64: result.audio_base64 });
+          window.dispatchEvent(new CustomEvent("audioGenerated", {
+            detail: { audioBase64: result.audio_base64 },
+          }));
+        }
+        // If no audio_base64, backend returned gracefully with no audio — silent mode
+      } catch (audioErr) {
+        // Audio failed — log quietly to console only, DO NOT show in chat
+        console.warn("[Audio] ElevenLabs unavailable, text-only mode:", audioErr.message);
+      }
+
     } catch (error) {
-      console.error(error);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: `Erreur : ${error.message}` },
-      ]);
+      // Only chat errors show in the UI (brief, friendly message)
+      console.error("[Chat] Error:", error);
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: "❌ Une erreur est survenue. Veuillez réessayer.",
+      }]);
       store.set({ isGenerating: false });
     } finally {
       setIsLoading(false);
@@ -136,10 +121,6 @@ export const TextToAudioGenerator = ({ onAudioGenerated }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     sendPrompt(inputPrompt);
-  };
-
-  const handleSuggestion = (label) => {
-    sendPrompt(label);
   };
 
   useEffect(() => {
@@ -160,32 +141,17 @@ export const TextToAudioGenerator = ({ onAudioGenerated }) => {
       </motion.h2>
 
       <div className="chat-history" ref={chatRef}>
-        {/* ── Suggestions (visible uniquement si aucun message) ── */}
-        <AnimatePresence>
-          {messages.length === 0 && !isLoading && (
-            <motion.div
-              className="suggestions-wrap"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <p className="suggestions-hint">Commence par une question 👇</p>
-              <div className="suggestions-grid">
-                {SUGGESTIONS.map((s) => (
-                  <button
-                    key={s.label}
-                    className="suggestion-chip"
-                    onClick={() => handleSuggestion(s.label)}
-                    disabled={isLoading}
-                  >
-                    <span>{s.emoji}</span> {s.label}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* ── Empty state hint ── */}
+        {messages.length === 0 && !isLoading && (
+          <motion.div
+            className="chat-empty-hint"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <span>💬</span> Pose ta première question !
+          </motion.div>
+        )}
 
         {/* ── Messages ── */}
         {messages.map((msg, index) => (
