@@ -8,14 +8,24 @@ import "./bot.css";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-// ── Ephemeral session ID — fresh on every widget open ──────────────────────
-// (NOT persisted in localStorage — closing/reopening the widget resets history)
-function newSessionId() {
-  return "sess_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+// ── Session ID — persisté dans localStorage pour charger l'historique Supabase ──
+// Reset explicite quand l'utilisateur ferme et réouvre le widget.
+function getOrCreateSessionId() {
+  let id = localStorage.getItem("aro_chat_session");
+  if (!id) {
+    id = "sess_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem("aro_chat_session", id);
+  }
+  return id;
 }
 
-export const TextToAudioGenerator = ({ onAudioGenerated }) => {
-  const sessionId = useRef(newSessionId()); // new session each time widget mounts
+function clearSession() {
+  localStorage.removeItem("aro_chat_session");
+}
+
+export const TextToAudioGenerator = ({ onAudioGenerated, onRequestClose }) => {
+  const sessionId = useRef(getOrCreateSessionId()); // persisted in localStorage
+
   const [inputPrompt, setInputPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
